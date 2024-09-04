@@ -37,15 +37,22 @@ export default function Sidebar() {
         )}
       </div>
       {session && (
-        <div className="text-gray-700 text-sm flex items-center cursor-pointer p-3 hover:bg-gray-100 rounded-full transition-all duration-200">
+        <div className="text-gray-700 text-sm flex items-center cursor-pointer p-3 hover:bg-gray-200 rounded-full transition-all duration-200">
           <img
             src={session.user.image}
             alt="user-img"
             className="h-10 w-10 rounded-full xl:mr-2"
           />
-          <div className="hidden xl:inline">
-            <h4 className="font-bold">{session.user.name}</h4>
-            <p className="text-gray-500">@{session.user.username}</p>
+          <div className="relative group">
+            <div className="hidden xl:inline">
+              <h4 className="font-bold">{session.user.name.slice(0, 10)}</h4>
+              <p className="text-gray-500">
+                @{session.user.username.slice(0, 10)}
+              </p>
+            </div>
+            <div className="absolute bottom-full mb-2 w-max p-2 bg-gray-700 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity">
+              {session.user.username}
+            </div>
           </div>
           <HiDotsHorizontal className="h-5 xl:ml-8 hidden xl:inline" />
         </div>
