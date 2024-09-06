@@ -14,7 +14,7 @@ export default function Post({ post, id }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-1 whitespace-nowrap">
             <div className="relative group">
-              <h4 className="font-bold text-sx truncate">
+              <h4 className="font-bold text-sm truncate">
                 {post?.name.slice(0, 15)}...
               </h4>
               <span className="text-xs truncate">@{post?.username}</span>
@@ -33,7 +33,7 @@ export default function Post({ post, id }) {
         <Link href={`/posts/${id}`}>
           <img src={post?.image} className="rounded-2xl mr-2 max-w-[70%]" />
         </Link>
-        <Icons/>
+        <Icons id={id}/>
       </div>
     </div>
   );
