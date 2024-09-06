@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn, signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { FaXTwitter } from "react-icons/fa6";
 import { HiHome, HiDotsHorizontal } from "react-icons/hi";
@@ -38,10 +39,12 @@ export default function Sidebar() {
       </div>
       {session && (
         <div className="text-gray-700 text-sm flex items-center cursor-pointer p-3 hover:bg-gray-200 rounded-full transition-all duration-200">
-          <img
+          <Image
             src={session.user.image}
             alt="user-img"
             className="h-10 w-10 rounded-full xl:mr-2"
+            width = {30}
+            height = {30}
           />
           <div className="relative group">
             <div className="hidden xl:inline">
