@@ -15,13 +15,13 @@ import {
   doc,
   onSnapshot,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
-import {app} from "../firebase"
+import { app } from "../firebase";
 import { signIn, useSession } from "next-auth/react";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function Icons({ id }) {
+export default function Icons({ id, uid }) {
   const { data: session } = useSession();
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState([]);
@@ -54,6 +54,24 @@ export default function Icons({ id }) {
     );
   }, [likes]);
 
+  //   delete post
+  const deletePost = async () => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      if (session?.user?.uid === uid) {
+        deleteDoc(doc(db, "posts", id))
+          .then(() => {
+            console.log("Document successfully deleted!");
+            window.location.reload();
+          })
+          .catch((error) => {
+            console.error("Error removing document: ", error);
+          });
+      } else {
+        alert("You are not authorized to delete this post");
+      }
+    }
+  };
+
   return (
     <div className="flex justify-start gap-5 p-2 text-gray-500">
       <div className="flex items-center">
@@ -77,7 +95,12 @@ export default function Icons({ id }) {
       <VscComment className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-emerald-500 hover:bg-sky-100" />
       <VscBookmark className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-sky-500 hover:bg-sky-100" />
       <VscFlame className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-rose-500 hover:bg-sky-100" />
-      <VscTrash className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-red-500 hover:bg-red-100" />
+      {session?.user?.uid === uid && (
+        <VscTrash
+          className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-red-500 hover:bg-red-100"
+          onClick={deletePost}
+        />
+      )}
       <VscLiveShare className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-green-500 hover:bg-sky-100" />
       <VscCircleSlash className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-red-500 hover:bg-rose-100" />
       <VscUnlock className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-sky-500 hover:bg-sky-100" />
