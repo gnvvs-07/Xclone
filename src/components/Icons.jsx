@@ -21,11 +21,12 @@ import { app } from "../firebase";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { modalState } from "@/atom/modelAtom";
+import { modalState, postIdState } from "@/atom/modelAtom";
 
 export default function Icons({ id, uid }) {
   const { data: session } = useSession();
   const [open, setOpen] = useRecoilState(modalState);
+  const [postId, setPostId] = useRecoilState(postIdState);
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState([]);
   //   data base
@@ -96,7 +97,14 @@ export default function Icons({ id, uid }) {
         )}
       </div>
       <VscComment
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          if (!session) {
+            signIn();
+          } else {
+            setOpen(!open);
+            setPostId(id);
+          }
+        }}
         className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-emerald-500 hover:bg-sky-100"
       />
       <VscBookmark className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-sky-500 hover:bg-sky-100" />
