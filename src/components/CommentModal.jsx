@@ -4,17 +4,25 @@ import { MdOutlineCloseFullscreen } from "react-icons/md";
 
 import Modal from "react-modal";
 
-import { doc, getFirestore, onSnapshot } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getFirestore,
+  onSnapshot,
+  serverTimestamp,
+} from "firebase/firestore";
 import { app } from "@/firebase";
 
 import { useRecoilState } from "recoil";
 import { modalState, postIdState } from "@/atom/modelAtom";
 
 import { useSession } from "next-auth/react";
-
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 function CommentModal() {
+  const router = useRouter();
   const [open, setOpen] = useRecoilState(modalState);
   const [postId, setPostId] = useRecoilState(postIdState);
   const [input, setInput] = useState("");
@@ -36,7 +44,23 @@ function CommentModal() {
     }
   }, [postId]);
 
-  const sendComment = () => {};
+  const sendComment = async () => {
+    addDoc(collection(db, "posts", postId, "comments"), {
+      name: session.user.name,
+      username: session.user.username,
+      userImg: session.user.image,
+      comment: input,
+      timestamp: serverTimestamp(),
+    })
+      .then(() => {
+        setInput("");
+        setOpen(false);
+        router.push(`/posts/${postId}`);
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+      });
+  };
 
   return (
     <div>
@@ -72,14 +96,10 @@ function CommentModal() {
               {post?.text}
             </p>
             <div className="flex p-3 space-x-3">
-              <Image
+              <img
                 src={session.user.image}
                 alt="user-img"
-                height={50}
-                width={50}
-                layout="fixed" // prevents the image from scaling
-                priority // ensures the image is loaded quickly
-                className="object-contain cursor-pointer hover:brightness-95 rounded-full"
+                className=" h-11 w-11 object-contain cursor-pointer hover:brightness-95 rounded-full"
               />
 
               <div className="w-full divide-y divide-gray-200">

@@ -29,6 +29,7 @@ export default function Icons({ id, uid }) {
   const [postId, setPostId] = useRecoilState(postIdState);
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState([]);
+  const [comments, setComments] = useState([]);
   //   data base
   const db = getFirestore(app);
   const likePost = async () => {
@@ -57,6 +58,14 @@ export default function Icons({ id, uid }) {
       likes.findIndex((like) => like.id === session?.user?.uid) !== -1
     );
   }, [likes]);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "posts", id, "comments"),
+      (snapshot) => setComments(snapshot.docs)
+    );
+    return () => unsubscribe();
+  }, [db, id]);
 
   //   delete post
   const deletePost = async () => {
@@ -96,17 +105,22 @@ export default function Icons({ id, uid }) {
           </span>
         )}
       </div>
-      <VscComment
-        onClick={() => {
-          if (!session) {
-            signIn();
-          } else {
-            setOpen(!open);
-            setPostId(id);
-          }
-        }}
-        className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-emerald-500 hover:bg-sky-100"
-      />
+      <div className="flex items-center">
+        <VscComment
+          onClick={() => {
+            if (!session) {
+              signIn();
+            } else {
+              setOpen(!open);
+              setPostId(id);
+            }
+          }}
+          className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-emerald-500 hover:bg-sky-100"
+        />
+        {comments.length > 0 && (
+          <span className="text-xs">{comments.length}</span>
+        )}
+      </div>
       <VscBookmark className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-sky-500 hover:bg-sky-100" />
       <VscFlame className="h-8 w-8 cursor-pointer rounded-full  transition duration-500 ease-in-out p-2 hover:text-rose-500 hover:bg-sky-100" />
       {session?.user?.uid === uid && (
